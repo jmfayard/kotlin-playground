@@ -1,8 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm")
     application
+    kotlin("jvm")
+    kotlin("plugin.serialization")
+    id("com.squareup.sqldelight") version "1.5.3"
 }
 
 group = "de.fayard"
@@ -13,7 +15,34 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
+    testImplementation(Testing.junit.jupiter)
+    testImplementation(Kotlin.test.junit)
+    testImplementation(Testing.kotest.runner.junit5)
+    testImplementation(Testing.kotest.assertions.json)
+
+    implementation(Kotlin.stdlib.jdk8)
+
+    implementation(KotlinX.datetime)
+    implementation(KotlinX.collections.immutableJvmOnly)
+
+    implementation(KotlinX.coroutines.core)
+    implementation(KotlinX.coroutines.jdk8)
+
+    implementation(KotlinX.serialization.core)
+    implementation(KotlinX.serialization.json)
+    implementation(KotlinX.serialization.properties)
+    implementation("com.charleskorn.kaml:kaml:_")
+    implementation("de.brudaswen.kotlinx.serialization:kotlinx-serialization-csv:_")
+
+    implementation("org.hibernate.validator:hibernate-validator:_")
+
+    implementation(Ktor.client.core)
+    implementation(Ktor.client.json)
+    implementation(Ktor.client.serialization)
+    implementation(Ktor.client.okHttp)
+
+    implementation(Square.kotlinPoet)
+    implementation(Square.sqlDelight.drivers.jdbc)
 }
 
 tasks.test {
