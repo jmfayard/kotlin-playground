@@ -51,6 +51,9 @@ dependencies {
 
     implementation("com.github.kotlin-inquirer:kotlin-inquirer:_")
     implementation("com.github.ajalt.clikt:clikt:_")
+
+    implementation("org.hibernate.validator:hibernate-validator:_")
+    implementation("io.arrow-kt:arrow-core:_")  // optional
 }
 
 tasks.test {
