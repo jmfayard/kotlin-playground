@@ -19,8 +19,8 @@ fun main(args: Array<String>) {
         }
 
     println()
-    println("== Updating scripts from the bin folder ==")
-    File("bin").walk()
+    println("== Updating scripts from the bin and scripts folder ==")
+    (File("bin").walk() + File("scripts").walk())
         .filter { it.extension in listOf("kts", "main.kts") }
         .forEach {
             it.updateScriptFile()

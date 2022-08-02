@@ -12,6 +12,11 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io") {
+        mavenContent {
+            includeGroupByRegex("com.github.*")
+        }
+    }
 }
 
 dependencies {
@@ -43,6 +48,9 @@ dependencies {
 
     implementation(Square.kotlinPoet)
     implementation(Square.sqlDelight.drivers.jdbc)
+
+    implementation("com.github.kotlin-inquirer:kotlin-inquirer:_")
+    implementation("com.github.ajalt.clikt:clikt:_")
 }
 
 tasks.test {

@@ -12,7 +12,7 @@ class MarkdownLinkTest : StringSpec({
     val validUrls = validUrlsMarkdown.lines().map(String::trim)
 
     "URL only" {
-        extractLinksFromMarkdown(validUrlsMarkdown).map { it.url } shouldBe validUrls
+        extractLinksFromMarkdown(validUrlsMarkdown) shouldBe validUrls
     }
 
     val markdownText = """
@@ -26,33 +26,20 @@ class MarkdownLinkTest : StringSpec({
     """
 
     "URL and name" {
-        val linkNames = listOf("first link", "second link", "third link")
-        val expected = linkNames.zip(validUrls) { name, url -> MarkdownLink(name, url) }
         extractLinksFromMarkdown(markdownText)
-            .shouldBe(expected)
+            .shouldBe(validUrls)
     }
 })
 
-// start group regex
-val URL_REGEX = "https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]".toRegex()
-val URL_TITLE_REGEX = "\\[([\\w\\s\\d]+)]\\((https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])\\)".toRegex()
-// end group regex
-
 // start group MarkdownLink
-data class MarkdownLink(val name: String?, val url: String)
-
-fun extractLinksFromMarkdown(markdown: String): List<MarkdownLink> {
-
-    val withNames = URL_TITLE_REGEX.findAll(markdown)
-        .map { result: MatchResult ->
-            val (text, url) = result.destructured
-            MarkdownLink(text, url)
-        }
-        .toList()
+fun extractLinksFromMarkdown(markdown: String): List<String> {
+    val URL_REGEX = "https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]".toRegex()
     val urlsOnly = URL_REGEX.findAll(markdown)
         .map { result ->
-            MarkdownLink(null, result.value)
-        }.toList()
-    return (withNames + urlsOnly).distinctBy { it.url }
+            result.value
+        }
+        .toList()
+        .distinct()
+    return urlsOnly
 }
 // end group MarkdownLink
