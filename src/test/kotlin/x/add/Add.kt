@@ -1,6 +1,5 @@
 package x.add
 
-import com.github.kinquirer.components.ListViewOptions
 import java.io.File
 
 fun main() {
@@ -8,12 +7,6 @@ fun main() {
     //Feature("deleteme").createFeature()
     Feature("deleteme").createGraphql("someCat", isQuery = false)
 }
-
-fun listViewOptions() = ListViewOptions(
-    questionMarkPrefix = "🌍",
-    cursor = " 😎 ",
-    nonCursor = "    ",
-)
 
 // start group Feature
 fun xFolder(path: String) = File("/Users/jmfayard/tignum/backend-tignum-x/$path")
@@ -26,6 +19,7 @@ fun scanFeatures(): List<String> {
 }
 
 data class Feature(val featureName: String) {
+    val camelCaseRegex = "[a-z][a-zA-Z0-9]+".toRegex()
     val repo = xFolder(".").canonicalFile
     val main = xFolder("src/main/kotlin/com/tignum/backend/features/$featureName")
     val mainData = main.resolve("data")
@@ -52,7 +46,7 @@ data class Feature(val featureName: String) {
         createDirsIfNecessary()
         val PascalCase = featureName.replaceFirstChar { it.uppercase() }
         main.resolve("${PascalCase}Feature.kt").logAndWriteText(
-            createFeatureClass(featureName, PascalCase)
+            createFeatureClass(featureName)
         )
         println("Don't forget to register ${featureName}Feature() in Feature.kt")
     }
@@ -103,9 +97,7 @@ data class Feature(val featureName: String) {
 
 }
 
-val camelCaseRegex = "[a-z][a-zA-Z0-9]+".toRegex()
-
-fun createFeatureClass(featureName: String, PascalCase: String) = """
+fun createFeatureClass(featureName: String) = """
 package com.tignum.backend.features.$featureName
 
 import com.tignum.backend.core.graphql.GraphQLFeatureSetup
@@ -149,7 +141,7 @@ class $name() : UseCase<${name}Payload, ${name}Input> {
 }
 """
 
-private fun graphqlClass(featureName: String, PascalCase: String, camelCase: String, kind: String) = """
+fun graphqlClass(featureName: String, PascalCase: String, camelCase: String, kind: String) = """
 package com.tignum.backend.features.${featureName}.graphql
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
@@ -227,8 +219,9 @@ class ${PascalCase}${kind}Test : GraphQLTest() {
 }
 """
 
-private val dollar = '$'
-fun graphqlQueryClass(graphqlName: String, PascalCase: String, kind: String) = """
+fun graphqlQueryClass(graphqlName: String, PascalCase: String, kind: String): String {
+    val dollar: String = '$'.toString()
+    return """
 # variable: { "name":  "TODO"}
 ${kind.lowercase()} ${PascalCase}(${dollar}name: String!){
     $graphqlName(input: {name: ${dollar}name}) {
@@ -250,5 +243,6 @@ fragment ${PascalCase}Fragment on ${PascalCase}Payload {
 }
 
 """.trimIndent()
+}
 
 // end group Feature
