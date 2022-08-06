@@ -70,11 +70,11 @@ class BookmarksTest : FunSpec({
 // start group bookmark
 data class Bookmark(val name: String, val url: String)
 
-data class GitHubRepo(val owner: String, val repo: String)
+private data class GitHubRepo(val owner: String, val repo: String)
 
-val GitHubRepo.url: String get() = "https://github.com/$owner/$repo"
+private val GitHubRepo.url: String get() = "https://github.com/$owner/$repo"
 
-fun GitHubRepo.bookmarks() = listOf(
+private fun GitHubRepo.bookmarks() = listOf(
     Bookmark("repo.main", url),
     Bookmark("repo.issues", "$url/issues"),
     Bookmark("repo.pulls", "$url/pulls"),
@@ -93,7 +93,7 @@ fun List<Bookmark>.writetoFile(output: File) {
     output.writeText("$HEADER\n$content\n")
 }
 
-fun parseMarkdownRepo(input: String): GitHubRepo? {
+private fun parseMarkdownRepo(input: String): GitHubRepo? {
     val s = input.trim().replace(".git", "")
     val path = s.substringAfter("github.com").substring(1)
     return when {

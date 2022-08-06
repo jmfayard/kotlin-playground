@@ -5,6 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GitHubIssue(
+    @SerialName("pull_request")
+    val pullRequest: GitHubPullRequest? = null,
     @SerialName("active_lock_reason")
     val assignee: GitHubUser? = GitHubUser(),
     val assignees: List<GitHubUser?> = listOf(),

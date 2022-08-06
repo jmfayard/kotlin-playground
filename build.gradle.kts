@@ -45,6 +45,9 @@ dependencies {
     implementation(Ktor.client.json)
     implementation(Ktor.client.serialization)
     implementation(Ktor.client.okHttp)
+    implementation(Ktor.client.logging)
+    implementation("io.ktor:ktor-client-content-negotiation:_")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:_")
 
     implementation(Square.kotlinPoet)
     implementation(Square.sqlDelight.drivers.jdbc)

@@ -5,13 +5,13 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
-data class GitHubPull(
+data class GitHubPullRequest(
     val assignee: GitHubUser? = null,
     val assignees: List<GitHubUser> = listOf(),
     @SerialName("author_association")
     val authorAssociation: String = "", // CONTRIBUTOR
     val base: Base? = Base(),
-    val body: String = "",
+    val body: String? = null,
     @SerialName("closed_at")
     val closedAt: String? = null,
     @SerialName("comments_url")
@@ -36,7 +36,7 @@ data class GitHubPull(
     @SerialName("merge_commit_sha")
     val mergeCommitSha: String = "", // 71a6de2bd780d576217c9c55bb260c208ed8aa1d
     @SerialName("merged_at")
-    val mergedAt: String? = "",
+    val mergedAt: String? = null,
     val milestone: GitHubMilestone? = null,
     @SerialName("node_id")
     val nodeId: String = "", // PR_kwDOCP1xB848iNoF
@@ -65,7 +65,7 @@ data class GitHubPull(
 data class Base(
     val label: String = "", // jmfayard:main
     val ref: String = "", // main
-    val repo: GithubRepo? = GithubRepo(),
+    val repo: GitHubRepo? = GitHubRepo(),
     val sha: String = "", // a6e58b18de41f2571f7ecc4b67ca76b5d392aa0e
     val user: GitHubUser? = GitHubUser()
 )
@@ -74,7 +74,7 @@ data class Base(
 data class GitHubHead(
     val label: String = "", // necatisozer:lifecycle-runtime-compose
     val ref: String = "", // lifecycle-runtime-compose
-    val repo: GithubRepo? = GithubRepo(),
+    val repo: GitHubRepo? = GitHubRepo(),
     val sha: String = "", // eb7cf524dcb0c041d74fac9710eed10e8a885274
     val user: UserXX? = UserXX()
 )
