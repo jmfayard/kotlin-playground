@@ -14,7 +14,7 @@ data class GitHubUser(
     val company: String = "", // Mentoring, Tech Writing, Kotlin, Backend, Android
     @SerialName("created_at")
     val createdAt: String = "", // 2010-10-29T12:56:07Z
-    val email: String = "",
+    val email: String? = null,
     @SerialName("events_url")
     val eventsUrl: String = "", // https://api.github.com/users/jmfayard/events{/privacy}
     val followers: Int = 0, // 196

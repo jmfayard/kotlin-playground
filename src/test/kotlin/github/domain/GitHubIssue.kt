@@ -25,7 +25,7 @@ data class GitHubIssue(
     @SerialName("html_url")
     val htmlUrl: String = "", // https://github.com/jmfayard/refreshVersions/issues/571
     val id: Int = 0, // 1330061731
-    val labels: List<GitHubLabel?> = listOf(),
+    val labels: List<GitHubLabel> = listOf(),
     @SerialName("labels_url")
     val labelsUrl: String = "", // https://api.github.com/repos/jmfayard/refreshVersions/issues/571/labels{/name}
     val locked: Boolean = false, // false

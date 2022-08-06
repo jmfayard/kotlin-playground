@@ -87,7 +87,7 @@ data class GithubRepo(
     val keysUrl: String = "", // https://api.github.com/repos/jmfayard/71694304/keys{/key_id}
     @SerialName("labels_url")
     val labelsUrl: String = "", // https://api.github.com/repos/jmfayard/71694304/labels{/name}
-    val language: String = "", // Kotlin
+    val language: String? = null, // Kotlin
     @SerialName("languages_url")
     val languagesUrl: String = "", // https://api.github.com/repos/jmfayard/71694304/languages
     val license: GitHubLicense? = GitHubLicense(),
@@ -96,7 +96,7 @@ data class GithubRepo(
     @SerialName("milestones_url")
     val milestonesUrl: String = "", // https://api.github.com/repos/jmfayard/71694304/milestones{/number}
     @SerialName("mirror_url")
-    val mirrorUrl: String = "", // null
+    val mirrorUrl: String? = null,
     val name: String = "", // 71694304
     @SerialName("node_id")
     val nodeId: String = "", // MDEwOlJlcG9zaXRvcnkxMTY2NzIxMTI=
