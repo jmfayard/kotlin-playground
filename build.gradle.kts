@@ -13,7 +13,7 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     maven("https://jitpack.io") {
-        mavenContent {
+        content {
             includeGroupByRegex("com.github.*")
         }
     }
