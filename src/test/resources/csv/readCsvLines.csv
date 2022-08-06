@@ -1,5 +1,7 @@
 propertyName         |mavenCoordinates                |availableVersions|
 ; this is a comment
 Square.okHttp3.okHttp|com.squareup.okhttp3:okhttp:4.5 |4.6 4.7          |
+
 Square.okHttp3.okHttp|com.squareup.okhttp3:okhttp     |                 |
+
 Square.picasso       |com.squareup.picasso:picasso:1.0|                 |

@@ -10,62 +10,50 @@ import io.kotest.matchers.string.shouldStartWith
 import java.io.File
 
 class CsvLineTest : FunSpec({
-    val okhttp = CsvColumns.csvLine(
+    val config = RefreshVersionsCsvConfig
+
+    val okhttp = config.csvLine(
         mavenCoordinates = "com.squareup.okhttp3:okhttp:4.5",
         propertyName = "Square.okHttp3.okHttp",
         availableVersions = listOf("4.6", "4.7")
     )
-    val okhttpNoAvailable = CsvColumns.csvLine(
+    val okhttpNoAvailable = config.csvLine(
         mavenCoordinates = "com.squareup.okhttp3:okhttp:4.5",
         propertyName = "Square.okHttp3.okHttp",
         availableVersions = emptyList()
     )
-    val okhttpNoVersion = CsvColumns.csvLine(
+    val okhttpNoVersion = config.csvLine(
         mavenCoordinates = "com.squareup.okhttp3:okhttp",
         propertyName = "Square.okHttp3.okHttp",
         availableVersions = emptyList()
     )
-    val picasso = CsvColumns.csvLine(
+    val picasso = config.csvLine(
         mavenCoordinates = "com.squareup.picasso:picasso:1.0",
         propertyName = "Square.picasso",
         availableVersions = emptyList()
     )
 
-    context("validating properties") {
-        test("maven") {
-            val expected = Maven("com.squareup.okhttp3", "okhttp")
-            okhttp.maven shouldBe expected
-            okhttpNoVersion.maven shouldBe expected
-        }
+    test("CsvLine") {
+        okhttp.toString() shouldBe """CsvLine(mapOf("propertyName" to "Square.okHttp3.okHttp", "mavenCoordinates" to "com.squareup.okhttp3:okhttp:4.5", "availableVersions" to "4.6 4.7"))"""
 
-        test("version") {
-            okhttp.version shouldBe "4.5"
-            okhttpNoVersion.version shouldBe null
-        }
-
-        test("invalid csv lines") {
-            shouldThrowAny {
-                CsvColumns.csvLine("mavenCoordinates", "propertyName")
-            }.message.shouldStartWith("Invalid mavenCoordinates")
-        }
-
-        test("groupNameVersion") {
-            okhttp.groupNameVersion shouldBe "com.squareup.okhttp3:okhttp:4.5"
-            okhttpNoVersion.groupNameVersion shouldBe "com.squareup.okhttp3:okhttp"
-        }
-
+        okhttp shouldBe config.csvLine(
+            mavenCoordinates = "com.squareup.okhttp3:okhttp:4.5",
+            propertyName = "Square.okHttp3.okHttp",
+            availableVersions = listOf("4.6", "4.7"),
+            lineNumber = 42,
+        )
     }
 
     context("reading CSV header") {
         with(CsvLine) {
             test("all columns") {
                 val header = "mavenCoordinates | propertyName | availableVersions"
-                parseHeader(header) shouldBe listOf(CsvColumns.mavenCoordinates, CsvColumns.propertyName, CsvColumns.availableVersions)
+                parseHeader(header) shouldBe listOf(config.mavenCoordinates, config.propertyName, config.availableVersions)
             }
 
             test("some columns") {
                 val header = "propertyName | mavenCoordinates"
-                parseHeader(header) shouldBe listOf(CsvColumns.propertyName, CsvColumns.mavenCoordinates)
+                parseHeader(header) shouldBe listOf(config.propertyName, config.mavenCoordinates)
             }
 
             test("invalid columns") {
@@ -93,7 +81,7 @@ class CsvLineTest : FunSpec({
 
         test("all columns") {
             val header = with(CsvLine) {
-                "${CsvColumns.mavenCoordinates}  |   ${CsvColumns.propertyName}   |   ${CsvColumns.availableVersions}"
+                "${config.mavenCoordinates}  |   ${config.propertyName}   |   ${config.availableVersions}"
             }
             val expectedCsv = """
                 mavenCoordinates                  |  propertyName           |  availableVersions  |
@@ -128,12 +116,18 @@ class CsvLineTest : FunSpec({
         test("read from file readCsvLines.csv") {
             val file = File("src/test/resources/csv/readCsvLines.csv")
             val csvLines: List<CsvLine> = file.readCsvLines()
-            csvLines shouldBe listOf(
-                okhttp.copy(lineNumber = 3),
-                okhttpNoVersion.copy(lineNumber = 4),
-                picasso.copy(lineNumber = 5),
-            )
+            csvLines shouldBe listOf(okhttp, okhttpNoVersion, picasso)
+            csvLines.map { it.lineNumber } shouldBe listOf(3, 5, 7)
         }
+
+        test("read and transform from file readCsvLines.csv") {
+            val expected = DependencyLine(mavenCoordinates = "com.squareup.okhttp3:okhttp:4.5", propertyName = "Square.okHttp3.okHttp", availableVersions = "4.6 4.7")
+            val file = File("src/test/resources/csv/readCsvLines.csv")
+            val csvLines = file.readAndTransformCsvLines(config)
+            csvLines.firstOrNull() shouldBe expected
+        }
+
+
         test("read from an non existing file should initialize it") {
             val file = File("src/test/resources/csv/${System.currentTimeMillis()}.csv")
             try {
@@ -147,8 +141,9 @@ class CsvLineTest : FunSpec({
         }
 
         test("all columns present") {
-            fun CsvLine.format() =
+            fun CsvLine.format() = with(config.transform(this)) {
                 "$propertyName  |  $mavenCoordinates | ${availableVersions}"
+            }
 
             val fileContent = """
             propertyName | mavenCoordinates | availableVersions
@@ -159,16 +154,13 @@ class CsvLineTest : FunSpec({
             """.trimIndent()
 
             val actual = CsvLine.readCsv(fileContent)
-            actual shouldBe listOf(
-                okhttp.copy(lineNumber = 3),
-                okhttpNoVersion.copy(lineNumber = 4),
-                picasso.copy(lineNumber = 5),
-            )
+            actual shouldBe listOf(okhttp, okhttpNoVersion, picasso)
         }
 
         test("missing column") {
-            fun CsvLine.format() =
+            fun CsvLine.format() = with(config.transform(this)) {
                 "$mavenCoordinates | $propertyName"
+            }
 
             val fileContent = """
             mavenCoordinates | propertyName
@@ -179,11 +171,7 @@ class CsvLineTest : FunSpec({
             """.trimIndent()
 
             val actual = CsvLine.readCsv(fileContent)
-            actual shouldBe listOf(
-                okhttpNoAvailable.copy(lineNumber = 3),
-                okhttpNoVersion.copy(lineNumber = 4),
-                picasso.copy(lineNumber = 5),
-            )
+            actual shouldBe listOf(okhttpNoAvailable, okhttpNoVersion, picasso)
         }
 
         test("empty content") {
@@ -227,7 +215,3 @@ class CsvLineTest : FunSpec({
     }
 })
 
-data class Maven(
-    val group: String,
-    val name: String
-)
