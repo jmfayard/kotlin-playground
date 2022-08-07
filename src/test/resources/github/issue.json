@@ -1,4 +1,7 @@
 {
+  "pull_request" : {
+    "html_url" : "https://github.com/jmfayard/refreshVersions/issues/571"
+  },
   "url" : "https://api.github.com/repos/jmfayard/refreshVersions/issues/571",
   "repository_url" : "https://api.github.com/repos/jmfayard/refreshVersions",
   "labels_url" : "https://api.github.com/repos/jmfayard/refreshVersions/issues/571/labels{/name}",

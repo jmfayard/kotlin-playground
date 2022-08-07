@@ -25,6 +25,10 @@ dependencies {
     testImplementation(Testing.kotest.runner.junit5)
     testImplementation(Testing.kotest.assertions.json)
 
+    implementation(Square.okHttp3)
+    // https://github.com/codeniko/JsonPathKt
+    implementation("com.nfeld.jsonpathkt:jsonpathkt:_")
+
     implementation(Kotlin.stdlib.jdk8)
 
     implementation(KotlinX.datetime)

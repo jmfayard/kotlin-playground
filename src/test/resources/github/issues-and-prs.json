@@ -1,0 +1,18 @@
+[
+  {
+    "url" : "https://api.github.com/repos/jmfayard/refreshVersions/issues/571",
+    "number" : 571,
+    "title" : "Caveat: refreshVersions might show available updates in versions catalog for dependencies you don't actually use",
+    "pull_request" : {
+      "html_url" : "https://github.com/jmfayard/refreshVersions/issues/571"
+    },
+    "shit" : 571
+  },
+  {
+    "url" : "https://api.github.com/repos/jmfayard/refreshVersions/issues/4",
+    "number" : 4,
+    "title" : "Caveat: refreshVersions might show available updates in versions catalog for dependencies you don't actually use",
+    "pull_request" : null,
+    "shit" : 42
+  }
+]

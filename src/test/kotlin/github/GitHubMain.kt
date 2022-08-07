@@ -1,13 +1,16 @@
 @file:OptIn(ExperimentalSerializationApi::class, ExperimentalSerializationApi::class)
+@file:Suppress("UNCHECKED_CAST")
 
 package github
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.nfeld.jsonpathkt.JsonPath
+import com.nfeld.jsonpathkt.extension.read
 import github.Env.GITHUB_TOKEN
 import github.domain.GitHubIssue
 import github.domain.GitHubPullRequest
 import github.domain.GitHubUser
 import io.kotest.assertions.assertSoftly
-import io.kotest.common.runBlocking
 import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.shouldBe
 import io.ktor.client.HttpClient
@@ -26,21 +29,93 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import java.io.File
 import java.io.InputStream
 
 fun main() {
-    val login = GithubLogin("jmfayard")
-    login.apiUrl("repos").debug("repos")
-
-    val repo = GithuRepoRef(login, "refreshVersions")
-    repo.apiUrl(null).debug("repo")
-
-    parseOutJsonFiles()
-    runBlocking {
-        fetchFromGitHub()
-    }
+    fetchIssuesAndPRsWithOkhttpJsonPath()
+//    val login = GithubLogin("jmfayard")
+//    login.apiUrl("repos").debug("repos")
+//
+//    val repo = GithuRepoRef(login, "refreshVersions")
+//    repo.apiUrl(null).debug("repo")
+//
+//    parseOutJsonFiles()
+//    runBlocking {
+//        fetchFromGitHub()
+//    }
 }
+
+fun fetchIssuesAndPRsWithOkhttpJsonPath() {
+
+    val issuesAndPrsUrl: HttpUrl = "https://api.github.com/repos/jmfayard/refreshVersions/issues".toHttpUrl().newBuilder()
+        .addQueryParameter("state", "all")
+        .addQueryParameter("sort", "updated")
+        .addQueryParameter("direction", "desc")
+        .addQueryParameter("per_page", "20")
+        .build()
+
+    val a: Iterator<String> = listOf("&").iterator()
+
+    val issuesAndPrs = okhttpClient.fetchJsonOrThrow(issuesAndPrsUrl)
+    val titles = issuesAndPrs.read<List<String?>>("\$.*.title")!!
+    val urls = issuesAndPrs.read<List<String?>>("\$.*.url")!!
+    val numbers = issuesAndPrs.read<List<Int?>>("\$.*.number")!!
+    val all = List(issuesAndPrs.size()) { i ->
+        val isPr = issuesAndPrs.path(i).path("pull_request").isEmpty
+        GitHubIssueOrPr(numbers[i], titles[i], urls[i], isPr)
+    }
+    val (prs, issues) = all.partition { it.isPr }
+    println(
+        """
+## Issues
+${issues.joinToString("\n")}
+
+## PRs
+${prs.joinToString("\n")}
+    """.trimIndent()
+    )
+}
+
+
+data class GitHubIssueOrPr(val number: Int?, val title: String?, val url: String?, val isPr: Boolean)
+
+data class ParsedGithubResult(val outer: List<Map<String, String>>)
+
+fun String.toHttpUrl(urlBuilder: HttpUrl.Builder.() -> Unit): HttpUrl =
+    toHttpUrl().newBuilder().apply(urlBuilder).build()
+
+val okhttpClient: OkHttpClient = OkHttpClient.Builder()
+    .build()
+
+fun OkHttpClient.fetchJsonOrThrow(
+    url: HttpUrl,
+): JsonNode {
+    val request = Request.Builder()
+        .url(url)
+        .build()
+    val json = newCall(request).execute().use { response ->
+        val bodyText = response.body.use { it?.string() ?: "{}" }
+        require(response.isSuccessful) { response.errorResponse(bodyText) }
+        bodyText
+    }
+    return JsonPath.parse(json) ?: error("Can't parse json\nURL: $url\n<<<\n$json\n>>>")
+    //return json
+}
+
+fun Response.errorResponse(bodyText: String) =
+    """
+    ERROR HTTP $code $message
+
+    ${headers.joinToString("\n")}
+
+    $bodyText
+    """.trimIndent()
 
 suspend fun fetchFromGitHub() = ktorClient.use {
     val user: GitHubUser = ktorClient.get("https://api.github.com/user") {
