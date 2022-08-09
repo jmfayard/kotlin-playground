@@ -5,10 +5,14 @@
 @file:Repository("https://repo.maven.apache.org/maven2/")
 @file:Repository("https://jitpack.io")
 @file:DependsOn("com.github.kotlin-inquirer:kotlin-inquirer:0.1.0")
+@file:DependsOn("com.github.ajalt.mordant:mordant-jvm:2.0.0-beta7")
 
 // https://github.com/lordcodes/turtle
 @file:DependsOn("com.lordcodes.turtle:turtle:0.7.0")
 
+import com.github.ajalt.mordant.rendering.TextColors.cyan
+import com.github.ajalt.mordant.rendering.TextColors.red
+import com.github.ajalt.mordant.terminal.Terminal
 import com.github.kinquirer.KInquirer
 import com.github.kinquirer.components.ListViewOptions
 import com.github.kinquirer.components.promptInput
@@ -17,7 +21,9 @@ import com.lordcodes.turtle.ShellScript
 import com.lordcodes.turtle.shellRun
 import java.io.File
 import java.util.Properties
+import kotlin.system.exitProcess
 
+val t = Terminal()
 val search = args.firstOrNull() ?: ""
 val bookmarks = readBookmarks(filter = search)
 when (bookmarks.size) {
@@ -72,8 +78,10 @@ fun openUrl(url: String) {
 
 
 infix fun Boolean.orFailWithMessage(message: String) {
-    println("error: $message")
-    if (not()) System.exit(1)
+    if (not()) {
+        t.println(red("error: $message"))
+        exitProcess(1)
+    }
 }
 
 fun urlsPropertiesFiles(): File =
@@ -84,7 +92,7 @@ fun urlsPropertiesFiles(): File =
         File(".").absoluteFile
     }.resolve("URLS.properties")
         .also {
-            it.canRead() orFailWithMessage "Can't find a file ${it.canonicalPath}"
+            it.canRead() orFailWithMessage "Can't find file " + cyan(it.canonicalPath)
         }
 
 fun ShellScript.openUrl(url: String): String {
