@@ -18,7 +18,7 @@ import com.lordcodes.turtle.shellRun
 import java.io.File
 import java.util.Properties
 
-val search = ""
+val search = args.firstOrNull() ?: ""
 val bookmarks = readBookmarks(filter = search)
 when (bookmarks.size) {
     0 -> error("No bookmark found containing $search")
@@ -61,6 +61,7 @@ fun File.readPropertiesFile(): Map<String, String> {
     @Suppress("UNCHECKED_CAST")
     return (properties.toMap() as Map<String, String>)
         .filter { it.key.isNotBlank() && it.value.isNotBlank() }
+        .toSortedMap()
 }
 
 fun openUrl(url: String) {
@@ -69,19 +70,22 @@ fun openUrl(url: String) {
     println("🎉 We hope you considered GOTO helpful! ")
 }
 
-fun urlsPropertiesFiles(): File {
-    val parentDirectories = sequence<File> {
-        var dir = File(".").absoluteFile
-        while (dir?.exists() == true) {
-            yield(dir)
-            dir = dir.parentFile
-        }
-    }
-    val filename = "URLS.properties"
-    return parentDirectories.firstOrNull { it.resolve(filename).canRead() }
-        ?.resolve(filename)
-        ?: error("Can't read bookmarks from a file called $filename")
+
+infix fun Boolean.orFailWithMessage(message: String) {
+    println("error: $message")
+    if (not()) System.exit(1)
 }
+
+fun urlsPropertiesFiles(): File =
+    try {
+        val path = shellRun("git", listOf("rev-parse", "--show-toplevel"))
+        File(path)
+    } catch (e: Exception) {
+        File(".").absoluteFile
+    }.resolve("URLS.properties")
+        .also {
+            it.canRead() orFailWithMessage "Can't find a file ${it.canonicalPath}"
+        }
 
 fun ShellScript.openUrl(url: String): String {
     val osName: String = System.getProperty("os.name")
