@@ -55,6 +55,7 @@ dependencies {
 
     implementation(Square.kotlinPoet)
     implementation(Square.sqlDelight.drivers.jdbc)
+    implementation(Koin.core)
 
     implementation("com.github.kotlin-inquirer:kotlin-inquirer:_")
     implementation("com.github.ajalt.clikt:clikt:_")
