@@ -4,7 +4,10 @@ plugins {
     application
     kotlin("jvm")
     kotlin("plugin.serialization")
-    id("com.squareup.sqldelight") version "1.5.3"
+    id("com.squareup.sqldelight")
+
+    // https://www.apollographql.com/docs/kotlin/
+    id("com.apollographql.apollo3")
 }
 
 group = "de.fayard"
@@ -62,6 +65,8 @@ dependencies {
 
     implementation("org.hibernate.validator:hibernate-validator:_")
     implementation("io.arrow-kt:arrow-core:_")  // optional
+
+    implementation("com.apollographql.apollo3:apollo-runtime:")
 }
 
 tasks.test {
@@ -133,4 +138,9 @@ tasks.register("fixScripts") {
             }
         }
     }
+}
+
+apollo {
+    packageName.set("github.graphql")
+    schemaFile.set(file("src/test/resources/github/schema.graphql"))
 }
