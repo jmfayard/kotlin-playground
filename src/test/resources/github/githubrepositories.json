@@ -1,0 +1,235 @@
+{
+  "data": {
+    "repository": {
+      "name": "refreshVersions",
+      "issues": {
+        "nodes": [
+          {
+            "number": 573,
+            "url": "https://github.com/jmfayard/refreshVersions/issues/573",
+            "title": "Ensure version-to-removals-revision-mapping.txt is updated and at the right time",
+            "state": "OPEN",
+            "createdAt": "2022-08-10T03:05:39Z",
+            "updatedAt": "2022-08-10T03:05:45Z",
+            "author": {
+              "login": "LouisCAD"
+            }
+          },
+          {
+            "number": 571,
+            "url": "https://github.com/jmfayard/refreshVersions/issues/571",
+            "title": "Caveat: refreshVersions might show available updates in versions catalog for dependencies you don't actually use",
+            "state": "CLOSED",
+            "createdAt": "2022-08-05T15:11:03Z",
+            "updatedAt": "2022-08-10T03:04:12Z",
+            "author": {
+              "login": "jmfayard"
+            }
+          },
+          {
+            "number": 333,
+            "url": "https://github.com/jmfayard/refreshVersions/issues/333",
+            "title": "Add support for Gradle 7.4 Version Catalogs",
+            "state": "CLOSED",
+            "createdAt": "2021-04-28T13:55:54Z",
+            "updatedAt": "2022-08-10T03:04:11Z",
+            "author": {
+              "login": "DanySK"
+            }
+          },
+          {
+            "number": 570,
+            "url": "https://github.com/jmfayard/refreshVersions/issues/570",
+            "title": "HTTP 409 when resolving plugin 0.41.0-SNAPSHOT",
+            "state": "CLOSED",
+            "createdAt": "2022-08-05T06:28:25Z",
+            "updatedAt": "2022-08-05T08:42:59Z",
+            "author": {
+              "login": "jmfayard"
+            }
+          },
+          {
+            "number": 568,
+            "url": "https://github.com/jmfayard/refreshVersions/issues/568",
+            "title": "Review bundled dependencies from #559",
+            "state": "OPEN",
+            "createdAt": "2022-08-02T07:37:24Z",
+            "updatedAt": "2022-08-02T09:27:55Z",
+            "author": {
+              "login": "jmfayard"
+            }
+          },
+          {
+            "number": 565,
+            "url": "https://github.com/jmfayard/refreshVersions/issues/565",
+            "title": "Androidx media3 datasource vs dataSource",
+            "state": "OPEN",
+            "createdAt": "2022-07-17T09:34:23Z",
+            "updatedAt": "2022-07-28T22:49:47Z",
+            "author": {
+              "login": "yschimke"
+            }
+          },
+          {
+            "number": 500,
+            "url": "https://github.com/jmfayard/refreshVersions/issues/500",
+            "title": "Leave a contextual comment if a dependency is not found in any of the configured repositories",
+            "state": "OPEN",
+            "createdAt": "2022-01-27T10:51:42Z",
+            "updatedAt": "2022-07-28T11:23:54Z",
+            "author": {
+              "login": "LouisCAD"
+            }
+          },
+          {
+            "number": 207,
+            "url": "https://github.com/jmfayard/refreshVersions/issues/207",
+            "title": "Support for Renovate Bot",
+            "state": "OPEN",
+            "createdAt": "2020-07-21T08:19:46Z",
+            "updatedAt": "2022-07-28T11:03:08Z",
+            "author": {
+              "login": "miikeat"
+            }
+          },
+          {
+            "number": 563,
+            "url": "https://github.com/jmfayard/refreshVersions/issues/563",
+            "title": "Dependency notations for Horologist",
+            "state": "CLOSED",
+            "createdAt": "2022-07-16T14:35:24Z",
+            "updatedAt": "2022-07-27T10:22:58Z",
+            "author": {
+              "login": "yschimke"
+            }
+          },
+          {
+            "number": 429,
+            "url": "https://github.com/jmfayard/refreshVersions/issues/429",
+            "title": "Migration: Support dependencies inside buildSrc/src/main/kotlin/*.gradle.kts",
+            "state": "OPEN",
+            "createdAt": "2021-08-30T21:53:20Z",
+            "updatedAt": "2022-07-14T00:50:08Z",
+            "author": {
+              "login": "thorntonrp"
+            }
+          }
+        ]
+      },
+      "pullRequests": {
+        "nodes": [
+          {
+            "number": 509,
+            "url": "https://github.com/jmfayard/refreshVersions/pull/509",
+            "title": "Add support for Versions Catalogs `gradle/libs.versions.toml`",
+            "state": "MERGED",
+            "createdAt": "2022-02-25T19:47:29Z",
+            "updatedAt": "2022-08-10T03:16:00Z",
+            "author": {
+              "login": "jmfayard"
+            }
+          },
+          {
+            "number": 517,
+            "url": "https://github.com/jmfayard/refreshVersions/pull/517",
+            "title": "Support for Kotlin scripts *.kts",
+            "state": "OPEN",
+            "createdAt": "2022-03-06T13:49:14Z",
+            "updatedAt": "2022-08-10T03:04:14Z",
+            "author": {
+              "login": "jmfayard"
+            }
+          },
+          {
+            "number": 572,
+            "url": "https://github.com/jmfayard/refreshVersions/pull/572",
+            "title": "Refactor tasks's name and descriptions",
+            "state": "OPEN",
+            "createdAt": "2022-08-08T09:17:54Z",
+            "updatedAt": "2022-08-10T03:04:13Z",
+            "author": {
+              "login": "jmfayard"
+            }
+          },
+          {
+            "number": 569,
+            "url": "https://github.com/jmfayard/refreshVersions/pull/569",
+            "title": "Add AndroidX.lifecycle.runtimeCompose dependency notation",
+            "state": "OPEN",
+            "createdAt": "2022-08-02T21:10:09Z",
+            "updatedAt": "2022-08-02T21:10:12Z",
+            "author": {
+              "login": "necatisozer"
+            }
+          },
+          {
+            "number": 559,
+            "url": "https://github.com/jmfayard/refreshVersions/pull/559",
+            "title": "Dependency notations updates",
+            "state": "MERGED",
+            "createdAt": "2022-07-02T11:50:19Z",
+            "updatedAt": "2022-08-02T07:42:49Z",
+            "author": {
+              "login": "jmfayard"
+            }
+          },
+          {
+            "number": 567,
+            "url": "https://github.com/jmfayard/refreshVersions/pull/567",
+            "title": "BundledDependenciesTest generates dependencies-notations.md",
+            "state": "MERGED",
+            "createdAt": "2022-08-02T07:24:59Z",
+            "updatedAt": "2022-08-02T07:29:52Z",
+            "author": {
+              "login": "jmfayard"
+            }
+          },
+          {
+            "number": 505,
+            "url": "https://github.com/jmfayard/refreshVersions/pull/505",
+            "title": "GitHub actions with Kotlin DSL",
+            "state": "CLOSED",
+            "createdAt": "2022-02-16T12:05:28Z",
+            "updatedAt": "2022-07-30T15:07:53Z",
+            "author": {
+              "login": "jmfayard"
+            }
+          },
+          {
+            "number": 504,
+            "url": "https://github.com/jmfayard/refreshVersions/pull/504",
+            "title": "Migrate instantly to gradle versions catalog with refreshVersions",
+            "state": "CLOSED",
+            "createdAt": "2022-02-12T16:10:31Z",
+            "updatedAt": "2022-07-30T15:07:52Z",
+            "author": {
+              "login": "jmfayard"
+            }
+          },
+          {
+            "number": 503,
+            "url": "https://github.com/jmfayard/refreshVersions/pull/503",
+            "title": "Add support for Ktor v2",
+            "state": "CLOSED",
+            "createdAt": "2022-02-08T16:41:35Z",
+            "updatedAt": "2022-07-30T15:07:51Z",
+            "author": {
+              "login": "jmfayard"
+            }
+          },
+          {
+            "number": 564,
+            "url": "https://github.com/jmfayard/refreshVersions/pull/564",
+            "title": "Dependency Notation for Horologist.",
+            "state": "MERGED",
+            "createdAt": "2022-07-16T14:47:12Z",
+            "updatedAt": "2022-07-27T11:13:33Z",
+            "author": {
+              "login": "yschimke"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

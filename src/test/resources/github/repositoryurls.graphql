@@ -1,0 +1,37 @@
+query RepositoryUrls {
+    repository(name: "refreshVersions", owner: "jmfayard") {
+        name
+        issues(
+            orderBy:{ direction: DESC, field: UPDATED_AT },
+            first: 10,
+        ) {
+            nodes {
+                number
+                url
+                title
+                state
+                createdAt
+                updatedAt
+                author {
+                    login
+                }
+            }
+        }
+        pullRequests(
+            orderBy:{ direction: DESC, field: UPDATED_AT },
+            first: 10,
+        ) {
+            nodes {
+                number
+                url
+                title
+                state
+                createdAt
+                updatedAt
+                author {
+                    login
+                }
+            }
+        }
+    }
+}

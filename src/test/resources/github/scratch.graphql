@@ -1,0 +1,27 @@
+query {
+    rateLimit {
+        limit
+        used
+        remaining
+    }
+    viewer {
+        ...UserFragment
+    }
+    user(login: "LouisCAD") {
+        ...UserFragment
+    }
+    topic(
+        name: "kotlin",
+
+    ) {
+        name
+        stargazerCount
+        viewerHasStarred
+    }
+}
+
+fragment UserFragment on User {
+    name
+    url
+    bio
+}
