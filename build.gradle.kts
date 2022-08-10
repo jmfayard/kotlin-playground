@@ -83,3 +83,54 @@ tasks.withType<KotlinCompile> {
 application {
     mainClass.set("MainKt")
 }
+
+tasks.register("fixScripts") {
+    group = "application"
+    description = "Fix Kotlin Scripts (permissions, bash wrapper)"
+
+    fun bashWrapper(name: String): String = """
+        #!/usr/bin/env bash
+        which kotlin >/dev/null || {
+          echo "Install Kotlin compiler from https://kotlinlang.org/docs/command-line.html"
+          exit 1
+        }
+        kotlin $name.main.kts
+    """.trimIndent()
+
+
+    doFirst {
+        fun List<File>.log(message: String) =
+            println("$message: ${joinToString { it.name }}")
+
+        val kotlinScripts = file("scripts")
+            .listFiles { file -> file.extension == "kts" }
+            .toList()
+            .also { it.log("kotlinScripts") }
+
+        val notExecutable = kotlinScripts
+            .filterNot { it.canExecute() }
+        if (notExecutable.isEmpty()) {
+            println("OK: all Kotlin scripts are executables")
+        } else {
+            println("FIX permissions for: " + notExecutable.joinToString { it.name })
+            notExecutable.forEach { file ->
+                file.setExecutable(true)
+            }
+        }
+
+        val missingBashWrappers = kotlinScripts
+            .mapNotNull { file ->
+                file.resolveSibling(file.name.removeSuffix(".main.kts"))
+                    .takeIf { it.canRead().not() }
+            }
+        if (missingBashWrappers.isEmpty()) {
+            println("OK: all Kotlin scripts have a Bash wrapper")
+        } else {
+            missingBashWrappers.forEach { file ->
+                println("FIX: creating Bash wrapper at ${file.canonicalPath}")
+                file.writeText(bashWrapper(file.canonicalPath))
+                file.setExecutable(true)
+            }
+        }
+    }
+}

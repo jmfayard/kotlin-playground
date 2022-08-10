@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+which kotlin >/dev/null || {
+  echo "Install Kotlin compiler from https://kotlinlang.org/docs/command-line.html"
+  exit 1
+}
+kotlin /Users/jmfayard/IdeaProjects/my-kotlin-scripts/scripts/goto.main.kts
