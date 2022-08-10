@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-import de.fayard.refreshVersions.core.StabilityLevel.Stable
-
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -24,7 +22,7 @@ plugins {
 refreshVersions {
     versionsPropertiesFile = file("gradle/versions.properties")
     rejectVersionIf {
-        candidate.stabilityLevel != Stable
+        candidate.stabilityLevel.isLessStableThan(current.stabilityLevel)
     }
 }
 

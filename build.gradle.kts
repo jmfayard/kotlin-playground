@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     testImplementation(Testing.junit.jupiter)
-    testImplementation(Kotlin.test.junit)
+    testImplementation(Kotlin.test.junit5)
     testImplementation(Testing.kotest.runner.junit5)
     testImplementation(Testing.kotest.assertions.json)
 
@@ -58,7 +58,7 @@ dependencies {
 
     implementation("com.github.kotlin-inquirer:kotlin-inquirer:_")
     implementation("com.github.ajalt.clikt:clikt:_")
-    implementation("com.github.ajalt.mordant:mordant:_")
+    implementation("com.github.ajalt.mordant:mordant-jvm:_")
 
     implementation("org.hibernate.validator:hibernate-validator:_")
     implementation("io.arrow-kt:arrow-core:_")  // optional
