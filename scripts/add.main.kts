@@ -100,6 +100,8 @@ data class Feature(val featureName: String) {
     val testGraphql = test.resolve("graphql")
     val testDomain = test.resolve("domain")
     val resources = xFolder("src/main/resources/$featureName")
+    val featureFunction = "${featureName}Feature"
+
     fun allDirs(): List<File> =
         listOf(main, mainData, mainGraphql, mainDomain, test, testDomain, testData, testGraphql, testDomain, resources)
 
@@ -116,44 +118,10 @@ data class Feature(val featureName: String) {
         createDirsIfNecessary()
         val PascalCase = featureName.replaceFirstChar { it.uppercase() }
         main.resolve("${PascalCase}Feature.kt").logAndWriteText(
-            createFeatureClass(featureName)
+            createFeatureClass(featureFunction)
         )
-        println("Don't forget to register ${featureName}Feature() in Feature.kt")
+        println("Don't forget to register $featureFunction() in Feature.kt")
     }
-
-    fun createGraphql(graphqlName: String, isQuery: Boolean) {
-        require(camelCaseRegex.matches(graphqlName)) { "graphqlName=$graphqlName is not in camelCase" }
-        createDirsIfNecessary()
-        val kind = if (isQuery) "Query" else "Mutation"
-        println("\n== UseCase ==")
-        val PascalCase = graphqlName.replaceFirstChar { it.uppercase() }
-        mainDomain.resolve("$PascalCase.kt").logAndWriteText(
-            useCase(featureName, PascalCase)
-        )
-        mainGraphql.resolve("$PascalCase${kind}.kt").logAndWriteText(
-            graphqlClass(featureName, PascalCase, graphqlName, kind)
-        )
-
-        testDomain.resolve("${PascalCase}Test.kt").logAndWriteText(
-            useCaseTestClass(featureName, PascalCase, graphqlName)
-        )
-
-        testGraphql.resolve("$PascalCase${kind}Test.kt").logAndWriteText(
-            graphqlTestClass(featureName, PascalCase, graphqlName, kind)
-        )
-
-        val queryFile = resources.resolve("$graphqlName.graphql")
-        queryFile.logAndWriteText(
-            graphqlQueryClass(graphqlName, PascalCase, kind)
-        )
-        println("")
-        println("== TODO")
-        println("- [ ] Run  test ➡️ ArchitectureTest ⬅️ to detect remaining issues")
-        println("- [ ] Restart your server")
-        println("- [ ] Try the query ${queryFile.relative}")
-        println("- [ ] Run the tests")
-    }
-
 
     fun createDirsIfNecessary() {
         println("checking directories for feature $featureName in $repo")
@@ -165,9 +133,7 @@ data class Feature(val featureName: String) {
         }
     }
 
-}
-
-fun createFeatureClass(featureName: String) = """
+    fun createFeatureClass(featureFunction: String) = """
 package com.tignum.backend.features.$featureName
 
 import com.tignum.backend.core.graphql.GraphQLFeatureSetup
@@ -176,7 +142,7 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-fun ${featureName}Feature() = object : Feature {
+fun ${featureFunction}() = object : Feature {
     override fun name(): String = "$featureName"
 
     override fun diModule(): Module = module {
@@ -192,110 +158,175 @@ fun ${featureName}Feature() = object : Feature {
 
 """.trimIndent()
 
-fun useCase(featureName: String, name: String) = """
+    fun createGraphql(graphqlName: String, isQuery: Boolean) {
+        GenerateQueryMutation(this, graphqlName, isQuery)
+            .createGraphql()
+    }
+
+}
+
+data class GenerateQueryMutation(
+    val feature: Feature,
+    val graphqlName: String,
+    val isQuery: Boolean = true,
+) {
+
+    val featureName = feature.featureName
+    val useCase = graphqlName.replaceFirstChar { it.uppercase() }
+    val unionTest = "${useCase}Test"
+    val useCaseProperty = "${graphqlName}UseCase"
+    val input = "${useCase}Input"
+    val payload = "${useCase}Payload"
+    val union = "${useCase}Union"
+    val superClass = if (isQuery) "Query" else "Mutation"
+    val graphqlClass = "${useCase}$superClass"
+    val graphqlTestClass = "${useCase}${superClass}Test"
+
+    fun import(suffix: String) =
+        "import com.tignum.backend.features.$featureName.$suffix"
+
+    fun createGraphql() = with(feature) {
+        require(camelCaseRegex.matches(graphqlName)) { "graphqlName=$graphqlName is not in camelCase" }
+        createDirsIfNecessary()
+        val kind = if (isQuery) "Query" else "Mutation"
+        println("\n== UseCase ==")
+        val PascalCase = graphqlName.replaceFirstChar { it.uppercase() }
+        mainDomain.resolve("$PascalCase.kt").logAndWriteText(
+            useCase()
+        )
+        mainGraphql.resolve("$PascalCase${kind}.kt")
+            .logAndWriteText(graphqlClass())
+
+        testDomain.resolve("${PascalCase}Test.kt").logAndWriteText(
+            useCaseTestClass()
+        )
+
+        testGraphql.resolve("$PascalCase${kind}Test.kt").logAndWriteText(
+            graphqlTestClass()
+        )
+
+        val queryFile = resources.resolve("$graphqlName.graphql")
+        queryFile.logAndWriteText(
+            graphqlQueryClass()
+        )
+        println(nextSteps(queryFile))
+    }
+
+    fun nextSteps(queryFile: File) =
+        """
+            |
+            |== TODO
+            |- [ ] Run  test ➡️ ArchitectureTest ⬅️ to detect remaining issues
+            |- [ ] Restart your server
+            |- [ ] Try the query ${queryFile}
+            |- [ ] Run the tests
+            """.trimMargin()
+
+
+    fun useCase() = """
 package com.tignum.backend.features.$featureName.domain
 
+${import("graphql.$input")}
+${import("graphql.$payload")}
 import com.tignum.backend.core.domain.UseCase
-import com.tignum.backend.features.$featureName.graphql.${name}Input
-import com.tignum.backend.features.$featureName.graphql.${name}Payload
 import com.tignum.backend.core.db.transactionIfNeeded
 import com.tignum.backend.core.failure.Failure
 import com.tignum.backend.core.functional.Either
 
 // TODO
-class $name() : UseCase<${name}Payload, ${name}Input> {
-    override suspend fun invoke(params: ${name}Input):
-        Either<Failure, ${name}Payload> = transactionIfNeeded {
+class $useCase() : UseCase<$payload, $input> {
+    override suspend fun invoke(params: $input):
+        Either<Failure, $payload> = transactionIfNeeded {
         TODO()
     }
 }
 """
 
-fun graphqlClass(featureName: String, PascalCase: String, camelCase: String, kind: String) = """
-package com.tignum.backend.features.${featureName}.graphql
+    fun graphqlClass() = """
+package com.tignum.backend.features.$featureName.graphql
 
+${import("domain.$useCase")}
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
-import com.expediagroup.graphql.server.operations.${kind}
+import com.expediagroup.graphql.server.operations.$superClass
 import com.tignum.backend.core.di.GraphQLDI
 import com.tignum.backend.core.graphql.GraphQLPayload
 import com.tignum.backend.core.graphql.UnionType
 import com.tignum.backend.core.graphql.toGraphQLUnionType
-import com.tignum.backend.features.${featureName}.domain.${PascalCase}
 import org.koin.core.component.inject
 
-class ${PascalCase}${kind} : ${kind}, GraphQLDI {
-    val ${camelCase}UseCase: ${PascalCase} by inject()
+class $graphqlClass : $superClass, GraphQLDI {
+    val $useCaseProperty: $useCase by inject()
 
     @GraphQLDescription("TODO: description")
-    suspend fun $camelCase(input: ${PascalCase}Input): ${PascalCase}Union =
-        ${camelCase}UseCase(input).toGraphQLUnionType()
+    suspend fun $graphqlName(input: $input): $union =
+        $useCaseProperty(input).toGraphQLUnionType()
 }
 
-interface ${PascalCase}Union : UnionType
+interface $union : UnionType
 
 // TODO
-data class ${PascalCase}Payload(
+data class $payload(
     val name: String,
-) : GraphQLPayload, ${PascalCase}Union
+) : GraphQLPayload, $union
 
 // TODO
-data class ${PascalCase}Input(
+data class $input(
     val name: String,
 )
 """.trimIndent()
 
 
-fun useCaseTestClass(featureName: String, PascalCase: String, camelCase: String) = """
+    fun useCaseTestClass() = """
 package com.tignum.backend.features.$featureName.domain
 
+${import("graphql.$input")}
 import com.tignum.backend.UnitTest
-import com.tignum.backend.features.$featureName.graphql.${PascalCase}Input
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
-class ${PascalCase}Test : UnitTest() {
-    val ${camelCase} = ${PascalCase}()
+class $unionTest : UnitTest() {
+    val $useCaseProperty = ${useCase}()
 
     @Test
     fun failingTest() = runTest {
         shouldNotThrowAny {
-            ${camelCase}(${PascalCase}Input("TODO"))
+            $useCaseProperty($input("TODO"))
         }
     }
 }
 
 """.trimIndent()
 
-fun graphqlTestClass(featureName: String, PascalCase: String, camelCase: String, kind: String) = """
-package com.tignum.backend.features.${featureName}.graphql
+    fun graphqlTestClass() = """
+package com.tignum.backend.features.$featureName.graphql
 
+${import("domain.$useCase")}
 import com.tignum.backend.GraphQLTest
 import com.tignum.backend.core.domain.returns
 import com.tignum.backend.core.matchers.executeQuery
 import com.tignum.backend.core.matchers.shouldSucceedAndMatchJsonResource
-import com.tignum.backend.features.$featureName.domain.${PascalCase}
 import org.junit.jupiter.api.Test
 import org.koin.test.mock.declareMock
 
-class ${PascalCase}${kind}Test : GraphQLTest() {
+class $graphqlTestClass : GraphQLTest() {
     @Test
-    fun ${camelCase}() {
-        declareMock<${PascalCase}>().returns(${PascalCase}Payload("TODO"))
+    fun ${graphqlName}() {
+        declareMock<${useCase}>().returns($payload("TODO"))
 
-        graphQL.executeQuery(queryFile = "${featureName}/${camelCase}.graphql")
-            .shouldSucceedAndMatchJsonResource("${featureName}/${camelCase}.json")
+        graphQL.executeQuery(queryFile = "$graphqlName/${graphqlName}.graphql")
+            .shouldSucceedAndMatchJsonResource("$graphqlName/${graphqlName}.json")
     }
 }
 """
 
-fun graphqlQueryClass(graphqlName: String, PascalCase: String, kind: String): String {
-    val dollar: String = '$'.toString()
-    return """
+    fun graphqlQueryClass(): String {
+        val dollar: String = '$'.toString()
+        return """
 # variable: { "name":  "TODO"}
-${kind.lowercase()} ${PascalCase}(${dollar}name: String!){
+${superClass.lowercase()} ${useCase}(${dollar}name: String!){
     $graphqlName(input: {name: ${dollar}name}) {
-        ...${PascalCase}Fragment
+        ...${useCase}Fragment
         ...GraphQLFailureFragment
     }
 }
@@ -307,11 +338,13 @@ fragment GraphQLFailureFragment on GraphQLFailure {
     message
 }
 
-fragment ${PascalCase}Fragment on ${PascalCase}Payload {
+fragment ${useCase}Fragment on ${useCase}Payload {
     __typename
     name
 }
 
 """.trimIndent()
+    }
+
 }
 // end group Feature
