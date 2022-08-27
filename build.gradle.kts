@@ -27,6 +27,7 @@ dependencies {
     testImplementation(Kotlin.test.junit5)
     testImplementation(Testing.kotest.runner.junit5)
     testImplementation(Testing.kotest.assertions.json)
+    testImplementation(Testing.kotest.framework.datatest)
 
     implementation(Square.okHttp3)
     // https://github.com/codeniko/JsonPathKt
