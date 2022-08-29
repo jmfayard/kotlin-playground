@@ -13,16 +13,31 @@ import org.junit.jupiter.api.Test
 
 class KotestMatcher {
 
+    val regexUrl = Regex("^https?://(?:www\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b[-a-zA-Z0-9()@:%_+.~#?&/=]*\$")
+
+    val validUrls = listOf(
+        "http://example.com",
+        "https://example.com",
+        "https://api.github.com/v1/pull_request/7891?limit=3",
+        "http://password@patrick:example.com/endpoint?a=bde#ab",
+    )
+
+    val invalidUrls = listOf(
+        "contact@gmail.com",
+        "https://example.com abc",
+        "ssh://my-computer.aws.com/etc/passwords",
+    )
+
     @Test
-    fun `regex match all`() {
+    fun `it's ok to use regex if and only if they come with unit tests`() {
         regexUrl
-            .shouldMatchAll(validUrls.linesTrimmed())
-            .shouldNotMatchAny(invalidUrls.linesTrimmed())
+            .shouldMatchAll(validUrls)
+            .shouldNotMatchAny(invalidUrls)
     }
 
     @Test
     fun `kotest should match regex`() {
-        validUrls.linesTrimmed().shouldForAll { line ->
+        validUrls.shouldForAll { line ->
             regexUrl should match(line)
             regexUrl.shouldMatch(line)
         }
@@ -30,7 +45,7 @@ class KotestMatcher {
 
     @Test
     fun `kotest should not match regex`() {
-        invalidUrls.linesTrimmed().shouldForAll { line ->
+        invalidUrls.shouldForAll { line ->
             regexUrl shouldNot match(line)
             regexUrl.shouldNotMatch(line)
         }
@@ -76,20 +91,6 @@ fun Regex.shouldNotMatchAny(inputs: List<String>) = apply {
 
 fun String.linesTrimmed() = trim().lines().map(String::trim)
 
-val regexUrl = Regex("^https?://(?:www\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b[-a-zA-Z0-9()@:%_+.~#?&/=]*\$")
-
-val validUrls = """
-            http://example.com
-            https://example.com
-            https://api.github.com/v1/pull_request/7891?limit=3
-            http://password@patrick:example.com/endpoint?a=bde#ab
-        """
-
-val invalidUrls = """
-            contact@gmail.com
-            https://example.com abc
-            ssh://my-computer.aws.com/etc/passwords
-        """.trimIndent()
 
 data class Person(
     val name: String,
