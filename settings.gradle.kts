@@ -40,5 +40,5 @@ gradleEnterprise {
 
 
 
-rootProject.name = "my-kotlin-scipts"
+rootProject.name = "kotlin-playground"
 
