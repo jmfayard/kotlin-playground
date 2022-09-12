@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     application
     kotlin("jvm")
+    kotlin("plugin.serialization")  // setup kotlinx-serialization https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/serialization-guide.md
     id("com.squareup.sqldelight")
 
     // https://www.apollographql.com/docs/kotlin/
@@ -48,6 +49,14 @@ dependencies {
 
     implementation("org.hibernate.validator:hibernate-validator:_")
 
+    implementation(Ktor.client.core)
+    implementation(Ktor.client.json)
+    implementation(Ktor.client.serialization)
+    implementation(Ktor.client.okHttp)
+    implementation(Ktor.client.logging)
+    implementation("io.ktor:ktor-client-content-negotiation:_")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:_")
+    implementation(Square.okHttp3.loggingInterceptor)
 
     implementation(Square.kotlinPoet)
     implementation(Square.sqlDelight.drivers.jdbc)
