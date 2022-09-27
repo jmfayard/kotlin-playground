@@ -21,8 +21,17 @@ plugins {
 }
 
 refreshVersions {
+    /**
+     * BUG: everything is stsable now!
+    > Task :refreshVersions
+    rVI: Version(value=5.9.1) stabilityLevel=Stable
+    rVI: Version(value=1.7.20-Beta) stabilityLevel=Stable
+    rVI: Version(value=1.7.20-RC) stabilityLevel=Stable
+    ..
+    **/
     rejectVersionIf {
         // candidate.stabilityLevel.isLessStableThan(current.stabilityLevel)
+        println("rVI: $candidate stabilityLevel=${candidate.stabilityLevel}")
         candidate.stabilityLevel != StabilityLevel.Stable
     }
 }
