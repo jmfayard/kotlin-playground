@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+pwd
+git fetch --all
+git status -s
+echo "What should you do?"
+#what=$(gum choose "abort" "commit all" "commit staged files")
+echo "committing everything anyway"
+git commit -a -m "WIP before merging origin/main"
+git merge origin/main || exit 1
+echo "maybe do this?"
+echo "git reset --soft origin/main"
+gum confirm "Run git reset --soft origin/main?" || exit 0
+git reset --soft origin/main
+echo "have a look at your git diff"
