@@ -2,7 +2,7 @@ import Config.buildFolder
 import Config.expectedRootFolder
 import java.io.File
 
-fun main(args: Array<String>) {
+fun main() {
     println("== Extracting groups for Kotlin files ==")
     println("A group is defined as being between line comments 'start group NAME' and 'end group NAME' ")
     println()
@@ -90,7 +90,7 @@ private fun File.extractMarkdownGroup(): List<KotlinGroup> {
 
 object Config {
     val buildFolder = File("build/kotlin-scripts-groups")
-    val expectedRootFolder = "my-kotlin-scripts"
+    val expectedRootFolder = "kotlin-playground"
 }
 
 data class KotlinGroup(val start: Int, val name: String, val end: Int = 0, val content: String = "")

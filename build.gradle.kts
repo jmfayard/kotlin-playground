@@ -4,7 +4,7 @@ plugins {
     application
     kotlin("jvm")
     kotlin("plugin.serialization")  // setup kotlinx-serialization https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/serialization-guide.md
-    id("com.squareup.sqldelight")
+    id("com.squareup.sqldelight") // TODO
 
     // https://www.apollographql.com/docs/kotlin/
     id("com.apollographql.apollo3")
