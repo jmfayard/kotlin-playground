@@ -20,7 +20,6 @@ plugins {
 }
 
 refreshVersions {
-    versionsPropertiesFile = file("gradle/versions.properties")
     rejectVersionIf {
         candidate.stabilityLevel.isLessStableThan(current.stabilityLevel)
     }

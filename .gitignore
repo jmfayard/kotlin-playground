@@ -2,7 +2,7 @@
 IGNORE_*
 buildscan.log
 gradle-build-scan.txt
-
+.idea/
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
