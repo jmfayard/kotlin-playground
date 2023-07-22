@@ -1,6 +1,5 @@
 package automation.checkvist
 
-import ChecklistModel
 import automation.common.EnvironmentVariable
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -8,9 +7,7 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
-import io.ktor.util.reflect.TypeInfo
-import io.ktor.util.reflect.typeInfo
-import kotlin.reflect.typeOf
+
 
 /**
  * https://checkvist.com/auth/api
@@ -20,8 +17,8 @@ class CheckvistApi(
 ) {
     companion object {
         val baseUrl = "https://checkvist.com"
-        val loginUrl = "/auth/login.json?version=2"
     }
+
     suspend fun login(): CheckvistToken {
         EnvironmentVariable.print()
         val response = ktorClient.post("$baseUrl/auth/login.json") {
